@@ -32,14 +32,17 @@ def homepage(request):
 
 And of course, it'll render a 403.html template for you if DEBUG mode is off.
 
-Also included is the ability to render your Django template error pages directly from Apache.
+Also, I don't think Django handles some certain error pages, such as 400, 403,
+(which shows some default error, but isn't overridable). So we now is included
+the ability to render your Django template error pages directly from Apache!
+It will render just as if Django was rendering a 404 page. Just place the
+corresponding 400.html page into the template folder in your app, and add this
+rule to your Apache configuration. You can do this with ANY error code you want,
+just like you can raise any error code you want; why should anyone be restricted? :)
 
 ```apacheconf
 ErrorDocument 400 /__errorpage__/?code=400
 ```
-
-Using mod_rewrite, you should be able to get the error page to render without changing
-the URL.
 
 Configuring & Setting up
 ------------------------
