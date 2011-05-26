@@ -16,7 +16,6 @@ class ErrorPageMiddleware(object):
     def process_exception(self, request, exception):
         '''Process exceptions raised in view code'''
         template = code = None
-        title = page_title = extra = None
 
         for i in globals():
             if i.startswith('Http'):
