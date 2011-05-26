@@ -17,8 +17,14 @@ class ErrorPageMiddleware(object):
 
         for i in globals():
             if i.startswith('Http'):
-                if isinstance(exception, globals()[i]) or isinstance(exception, PermissionDenied):
-                    code = int(i[-3:])
+                http_match = isinstance(exception, globals()[i])
+                perm_deny = isinstance(exception, PermissionDenied)
+                if http_match or perm_deny:
+                    if http_match:
+                        code = int(i[-3:])
+                    elif perm_deny:
+                        code = 403
+
                     template = '%d.html' % code
                     break
 
