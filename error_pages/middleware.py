@@ -37,9 +37,8 @@ class ErrorPageMiddleware(object):
             # get the template page source
             TEMPLATE = process_template(code)
 
-            # get the title
-            title = process_messages(code)[0]
             # ok, now log a warning
+            title = process_messages(code)[0]
             t = []
             for word in title.split(' '):
                 t.append(word.capitalize())
