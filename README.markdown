@@ -9,7 +9,7 @@ It behaves just like the default Django 404 and 500 error pages, which render
 some information in DEBUG mode.
 
 It is very flexible, and covers a wide range of error codes:
-400-418, 422-426
+400-418, 422-426,
 500-505, 507, 509, 510
 
 Configurability & Extendibility
@@ -41,13 +41,10 @@ ErrorDocument 400 /__errorpage__/?code=400
 Using mod_rewrite, you should be able to get the error page to render without changing
 the URL.
 
-Installing
-----------
+Configuring & Setting up
+------------------------
 
-* Download django-error-pages from https://github.com/Roejames12/django-error-pages/tarball/master
-* or just `pip install django-error-pages`
-
-* Now just add it to your middleware!
+* Add it to your middleware
 
 ```python
 MIDDLEWARE_CLASSES = (
@@ -55,3 +52,30 @@ MIDDLEWARE_CLASSES = (
     'error_pages.middleware.ErrorPageMiddleware',
 )
 ```
+
+* Then to your installed apps
+
+```python
+INSTALLED_APPS = (
+    ...
+    'error_pages',
+)
+```
+
+* And add the URL configuration to your root URL's
+
+```python
+from django.conf.urls.defaults import patterns, url
+
+urlpatterns = patterns('',
+    ...
+    url(r'^__errorpage__/$', 'error_pages.views.display_error'),
+)
+```
+
+Installing
+----------
+
+* Download django-error-pages from https://github.com/Roejames12/django-error-pages/tarball/master
+* Or `pip install django-error-pages`
+* `pip install django-error-pages==dev` for the absolute bleeding edge.
