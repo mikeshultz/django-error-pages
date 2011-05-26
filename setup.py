@@ -97,7 +97,7 @@ def find_package_data(
     return out
 
 
-README = read('README')
+README = read('README.markdown')
 VERSION = __import__('error_pages').__version__
 
 setup(
