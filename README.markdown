@@ -41,7 +41,7 @@ rule to your Apache configuration. You can do this with ANY error code you want,
 just like you can raise any error code you want; why should anyone be restricted? :)
 
 ```apacheconf
-ErrorDocument 400 /__errorpage__/?code=400
+ErrorDocument 400 /__errorpage__/400
 ```
 
 Configuring & Setting up
@@ -63,7 +63,7 @@ from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('',
     ...
-    url(r'^__errorpage__/$', 'error_pages.views.display_error'),
+    url(r'^__errorpage__/(?P<code>\d+)$', 'error_pages.views.display_error'),
 )
 ```
 
