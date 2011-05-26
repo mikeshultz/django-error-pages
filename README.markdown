@@ -53,15 +53,6 @@ MIDDLEWARE_CLASSES = (
 )
 ```
 
-* Then to your installed apps
-
-```python
-INSTALLED_APPS = (
-    ...
-    'error_pages',
-)
-```
-
 * And add the URL configuration to your root URL's
 
 ```python
