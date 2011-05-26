@@ -45,7 +45,7 @@ Installing
 ----------
 
 * Download django-error-pages from https://github.com/Roejames12/django-error-pages/tarball/master
-* or just `pip install django-error-messages`
+* or just `pip install django-error-pages`
 
 * Now just add it to your middleware!
 
