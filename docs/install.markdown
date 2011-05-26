@@ -1,5 +1,5 @@
 Installing
-----------
+==========
 
 * Download django-error-pages from https://github.com/Roejames12/django-error-pages/tarball/master
 * Or `pip install django-error-pages`

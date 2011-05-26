@@ -1,5 +1,5 @@
 How to use it
--------------
+=============
 
 Raising HTTP codes
 ------------------

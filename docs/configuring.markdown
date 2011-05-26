@@ -1,5 +1,5 @@
 Configuring
------------
+===========
 
 * Add it to your middleware
 
