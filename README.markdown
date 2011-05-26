@@ -8,6 +8,8 @@ It behaves just like the default Django 404 and 500 error pages, which render
 404.html and 500.html respectively inside your apps template folder, but display
 some information in DEBUG mode.
 
+It will catch all Django error codes and return an error page.
+
 It is very flexible, and covers a wide range of error codes:
 400-418, 422-426,
 500-505, 507, 509, 510
