@@ -10,7 +10,10 @@ from django.http import HttpResponse, Http404 as dHttp404
 
 class Http400(Exception): pass
 
-class Http401(Exception): pass
+class Http401(Exception):
+    def __init__(self, message=None, site=None):
+        self.args = self.message = message,
+        self.site = site
 
 class Http402(Exception): pass
 
