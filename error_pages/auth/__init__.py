@@ -1,1 +1,1 @@
-from error_pages.auth.basic import BasicAuth
+from error_pages.auth.basic import BasicAuthError, BasicAuth

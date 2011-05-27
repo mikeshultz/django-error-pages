@@ -3,6 +3,7 @@ import logging
 from django.template import Context, Template, loader
 from django.core.exceptions import PermissionDenied
 
+from error_pages.auth import BasicAuthError
 from error_pages.template import process_template, process_messages
 from error_pages import config
 from error_pages.http import *
@@ -20,16 +21,23 @@ class ErrorPageMiddleware(object):
     def process_exception(self, request, exception):
         '''Process exceptions raised in view code'''
         for i in globals():
-            http_match = isinstance(exception, globals()[i])
             perm_deny = isinstance(exception, PermissionDenied)
-            if http_match or perm_deny:
+            basic_error = isinstance(exception, BasicAuthError)
+            if perm_deny or basic_error:
+                if perm_deny:
+                    self.code = 403
+                    self.template = '%d.html' % self.code
+                    break
+                elif basic_error:
+                    if not request.user.is_authenticated():
+                        return exception.callableObj(exception.view).__call__(request, *exception.args, **exception.kwargs)
+
+            if i.startswith('Http'):
+                http_match = isinstance(exception, globals()[i])
                 if http_match:
                     self.code = int(i[-3:])
-                elif perm_deny:
-                    self.code = 403
-
-                self.template = '%d.html' % self.code
-                break
+                    self.template = '%d.html' % self.code
+                    break
 
     def process_response(self, request, response):
         '''Process the response by status code'''

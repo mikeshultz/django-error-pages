@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 from error_pages.auth.base import BaseAuth
 
+
 class BasicAuth(BaseAuth):
     '''Basic authentication decorator against django.contrib.auth
        user database.
@@ -49,3 +50,20 @@ class BasicAuth(BaseAuth):
                 return decoded.split(':', 1)
 
         return (None, None)
+
+
+class BasicAuthError(Exception):
+    '''Raise to invoke BasicAuth
+
+    Args:
+       callableObj : Custom BasicAuth class to use. Specify
+                     None to use the default BasicAuth
+       view        : The function that gets evaluated if login
+                     was successful
+       *args, **kwargs : args and kwargs to pass to the view
+    '''
+    def __init__(self, callableObj, view, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self.view = view
+        self.callableObj = callableObj or BasicAuth

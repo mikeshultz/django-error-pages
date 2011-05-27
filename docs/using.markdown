@@ -59,6 +59,24 @@ def handle_login_checking(self, request, response):
 handle_authenticated_user = handle_login_checking
 ```
 
+Now, having a decorator wrap an entire view is a little too much if you only
+want to pull up the login on only one small condition. You can do this too!
+
+```python
+from error_pages.auth import BasicAuth, BasicAuthError
+
+class CustomBasicAuth(BasicAuth):
+    realm = 'You must enter a good password!'
+
+def myview(request, *args, **kwargs):
+    if not request.user.is_authenticated():
+        raise BasicAuthError(None, myview, *args, **kwargs)
+
+def anotherview(request, *args, **kwargs):
+    if not request.user.is_authenticated():
+        raise BasicAuthError(CustomBasicAuth, anotherview, *args, **kwargs)
+```
+
 When in DEBUG mode, a default DEBUG template will be shown displaying
 the error code, message, what the error means. When DEBUG mode is off,
 a .html template file will be searched for. For example, if you're raising
