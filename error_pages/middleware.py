@@ -22,7 +22,7 @@ class ErrorPageMiddleware(object):
         '''Process exceptions raised in view code'''
         for i in globals():
             perm_deny = isinstance(exception, PermissionDenied)
-            basic_error = isinstance(exception, BasicAuthError)
+            basic_error = isinstance(exception, BasicAuthError) or issubclass(exception, BasicAuthError)
             if perm_deny or basic_error:
                 if perm_deny:
                     self.code = 403
