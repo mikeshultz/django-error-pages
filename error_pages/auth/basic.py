@@ -23,9 +23,7 @@ class BasicAuth(BaseAuth):
         if res:
             return res
 
-        response = HttpResponse(status=401)
-        response['WWW-Authenticate'] = 'Basic realm="%s"' % self.realm
-        return response
+        return self.login_required(args[0])
 
     def login(self, request, username, password, *args, **kwargs):
         '''Login checking code
@@ -41,6 +39,12 @@ class BasicAuth(BaseAuth):
                 login(request, user)
                 return self.func(*args, **kwargs)
 
+    def login_required(self, request):
+        '''Return the correct response to initiate login'''
+        response = HttpResponse(status=401)
+        response['WWW-Authenticate'] = 'Basic realm="%s"' % self.realm
+        return response
+
     def get_credentials(self, request):
         '''Get the authentication credentials'''
         if self.auth_header in request.META:
@@ -55,15 +59,17 @@ class BasicAuth(BaseAuth):
 class BasicAuthError(Exception):
     '''Raise to invoke BasicAuth
 
+       Just import this, and if you need, set callableObj
+       to your custom subclassed BaseAuth.
+
     Args:
-       callableObj : Custom BasicAuth class to use. Specify
-                     None to use the default BasicAuth
        view        : The function that gets evaluated if login
                      was successful
        *args, **kwargs : args and kwargs to pass to the view
     '''
-    def __init__(self, callableObj, view, *args, **kwargs):
+    callableObj = BasicAuth
+
+    def __init__(self, view, *args, **kwargs):
+        self.view = view
         self.args = args
         self.kwargs = kwargs
-        self.view = view
-        self.callableObj = callableObj or BasicAuth

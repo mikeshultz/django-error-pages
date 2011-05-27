@@ -68,13 +68,11 @@ from error_pages.auth import BasicAuth, BasicAuthError
 class CustomBasicAuth(BasicAuth):
     realm = 'You must enter a good password!'
 
+BaseAuthError.callableObj = CustomBasicAuth
+
 def myview(request, *args, **kwargs):
     if not request.user.is_authenticated():
-        raise BasicAuthError(None, myview, *args, **kwargs)
-
-def anotherview(request, *args, **kwargs):
-    if not request.user.is_authenticated():
-        raise BasicAuthError(CustomBasicAuth, anotherview, *args, **kwargs)
+        raise BasicAuthError(myview, *args, **kwargs)
 ```
 
 When in DEBUG mode, a default DEBUG template will be shown displaying
