@@ -26,13 +26,6 @@ class BasicAuth(BaseAuth):
         response['WWW-Authenticate'] = 'Basic realm="%s"' % self.realm
         return response
 
-    def check_password(self, request, realm, username, password):
-        '''Check the password.
-
-           Return True if authentication succeeded, else False.
-        '''
-        return username.check_password(password)
-
     def login(self, request, username, password, *args, **kwargs):
         '''Login checking code
 
@@ -42,7 +35,8 @@ class BasicAuth(BaseAuth):
         if username and password:
             user = authenticate(username=username, password=password)
 
-            if user.is_active and self.check_password(request, self.realm, user, password):
+            if user is not None and user.is_active:
+                request.user = user
                 login(request, user)
                 return self.func(*args, **kwargs)
 
