@@ -10,12 +10,10 @@ from error_pages.http import *
 
 class ErrorPageMiddleware(object):
     def __init__(self):
-        self.template = self.code = self.exception = None
+        self.template = self.code = None
 
     def process_exception(self, request, exception):
         '''Process exceptions raised in view code'''
-        self.exception = exception
-
         for i in globals():
             if i.startswith('Http'):
                 http_match = isinstance(exception, globals()[i])
@@ -46,22 +44,15 @@ class ErrorPageMiddleware(object):
 
         # ok, now log a warning
         if config.DEBUG and self.code:
-            # but skip the warning if we have a login form.
-            # it is the users job to implement a warning
-            # after processing their login
-            try:
-                if self.exception.site is None:
-                    raise ValueError
-            except:
-                title = process_messages(self.code)[0]
-                t = []
-                for word in title.split(' '):
-                    t.append(word.capitalize())
-                logging.warning('%s: %s' % (' '.join(t), request.path),
-                                extra={
-                                    'status_code': self.code,
-                                    'request': request
-                                })
+            title = process_messages(self.code)[0]
+            t = []
+            for word in title.split(' '):
+                t.append(word.capitalize())
+            logging.warning('%s: %s' % (' '.join(t), request.path),
+                            extra={
+                                'status_code': self.code,
+                                'request': request
+                            })
 
         if self.template is not None:
             # dont alter the response if we don't want the error page rendered
@@ -72,14 +63,8 @@ class ErrorPageMiddleware(object):
                 else:
                     t = loader.get_template(self.template)
 
+                headers = response.__dict__['_headers']
                 response = HttpResponse(t.render(Context({'request': request})), status=self.code)
-
-        # bring up login form if user wants one
-        if self.code == 401:
-            try:
-                if self.exception.site:
-                    response['WWW-Authenticate'] = 'Basic realm="%s"' % self.exception.site
-            except:
-                pass
+                response.__dict__['_headers'].update(headers)
 
         return response
