@@ -20,17 +20,16 @@ class ErrorPageMiddleware(object):
     def process_exception(self, request, exception):
         '''Process exceptions raised in view code'''
         for i in globals():
-            if i.startswith('Http'):
-                http_match = isinstance(exception, globals()[i])
-                perm_deny = isinstance(exception, PermissionDenied)
-                if http_match or perm_deny:
-                    if http_match:
-                        self.code = int(i[-3:])
-                    elif perm_deny:
-                        self.code = 403
+            http_match = isinstance(exception, globals()[i])
+            perm_deny = isinstance(exception, PermissionDenied)
+            if http_match or perm_deny:
+                if http_match:
+                    self.code = int(i[-3:])
+                elif perm_deny:
+                    self.code = 403
 
-                    self.template = '%d.html' % self.code
-                    break
+                self.template = '%d.html' % self.code
+                break
 
     def process_response(self, request, response):
         '''Process the response by status code'''
