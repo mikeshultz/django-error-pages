@@ -50,11 +50,13 @@ about you! Just do this.. Make sure your function either returns None or the res
 if success.
 
 ```python
-from error_pages.middleware import handle_authenticated_user
+from error_pages import middleware
 
 def handle_login_checking(self, request, response):
     if user_has_permission:
         return response
+
+handle_authenticated_user = handle_login_checking
 ```
 
 When in DEBUG mode, a default DEBUG template will be shown displaying
