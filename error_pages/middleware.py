@@ -8,6 +8,11 @@ from error_pages import config
 from error_pages.http import *
 
 
+# set this to a function for custom handling
+# of the login checking part of ErrorPageMiddleware
+handle_authenticated_user = None
+
+
 class ErrorPageMiddleware(object):
     def __init__(self):
         self.template = self.code = None
@@ -29,6 +34,7 @@ class ErrorPageMiddleware(object):
 
     def process_response(self, request, response):
         '''Process the response by status code'''
+
         # no exception raised by user, but it could still be error page worthy
         if not self.code:
             if response.status_code in [400, 401, 402, 403, 404, 405, 406, 407, 408,
@@ -38,9 +44,20 @@ class ErrorPageMiddleware(object):
                 self.code = response.status_code
                 self.template = '%d.html' % response.status_code
 
-        # let django handle these codes instead
+        # handle some special cases
         if self.code in [404, 500]:
+            # let django handle these codes instead
             self.template = self.code = None
+        elif self.code == 401:
+            # return normal response for logged in users
+            if not handle_authenticated_user:
+                if request.user.is_authenticated():
+                    return response
+            else:
+                # provide your own login checking code here
+                res = handle_authenticated_user(self, request, response)
+                if res:
+                    return res
 
         # ok, now log a warning
         if config.DEBUG and self.code:

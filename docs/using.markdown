@@ -25,26 +25,36 @@ the scope of this app and tutorial, however WSGI > 2.0, and mod_python
 have the ability to handle these, and also Django. Just do a little
 searching and you'll quickly find out what to do.
 
-In order to do Basic Authentication, just subclass BasicAuth and
-implement the authenticate method. Return True on success, and
-False, or None on failure. A 401.html template will be provided on
-authentication failure as usual.
+In order to do Basic Authentication, just use BasicAuth.
+By default, it authenticates against the django auth user db,
+but you can subclass BasicAuth and change code if you need to.
+A 401.html template will be provided on authentication
+failure as usual.
 
 ```python
-from error_pages.contrib.auth import BasicAuth
+from error_pages.auth import BasicAuth
 
 class ViewOrBasicAuth(BasicAuth):
-    def authenticate(self, request):
-        # some authentication code here
+    realm = 'MyRealm'
 
-        if userIsAuthenticated:
-            return True
-        else:
-            return False
+@ViewOrBasicAuth
+def homepage(request):
+    return render_to_response('index.html')
+```
 
-@ViewOrBasicAuth('My Realm')
-def some_view(request):
-    return render_to_response('tmpl.html')
+After you handle a login, the ErrorPageMiddleware will check if any user
+is logged in, and if so, it'll skip the error page and return a regular response.
+However, you may want to custom handle this part; perhaps you have an extensive
+permission system, then the code there will simply not suffice. We haven't forgotten
+about you! Just do this.. Make sure your function either returns None or the response
+if success.
+
+```python
+from error_pages.middleware import handle_authenticated_user
+
+def handle_login_checking(self, request, response):
+    if user_has_permission:
+        return response
 ```
 
 When in DEBUG mode, a default DEBUG template will be shown displaying
