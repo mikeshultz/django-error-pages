@@ -86,7 +86,7 @@ class ErrorPageMiddleware(object):
         if self.template is not None:
             # dont alter the response if we don't want the error page rendered
             headers = response.__dict__['_headers']
-            if config.ERRORPAGES_PAGES_ENABLED and self.code not in config.ERRORPAGES_PAGES_IGNORE:
+            if config.ERRORPAGES_PAGES_ENABLED and self.code not in config.ERRORPAGES_PAGES_IGNORE or config.DEBUG:
                 if config.DEBUG:
                     TEMPLATE = process_template(self.code)
                     t = Template(TEMPLATE, name='Error Page Template')
