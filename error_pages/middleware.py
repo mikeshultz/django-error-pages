@@ -22,7 +22,12 @@ class ErrorPageMiddleware(object):
         '''Process exceptions raised in view code'''
         for i in globals():
             perm_deny = isinstance(exception, PermissionDenied)
-            basic_error = isinstance(exception, BasicAuthError) or issubclass(exception, BasicAuth)
+            basic_error = isinstance(exception, BasicAuthError)
+            try:
+                basic_error = issubclass(exception, BasicAuth)
+            except TypeError:
+                pass
+
             if perm_deny or basic_error:
                 if perm_deny:
                     self.code = 403
@@ -80,6 +85,7 @@ class ErrorPageMiddleware(object):
 
         if self.template is not None:
             # dont alter the response if we don't want the error page rendered
+            headers = response.__dict__['_headers']
             if config.ERRORPAGES_PAGES_ENABLED and self.code not in config.ERRORPAGES_PAGES_IGNORE:
                 if config.DEBUG:
                     TEMPLATE = process_template(self.code)
@@ -87,8 +93,10 @@ class ErrorPageMiddleware(object):
                 else:
                     t = loader.get_template(self.template)
 
-                headers = response.__dict__['_headers']
                 response = HttpResponse(t.render(Context({'request': request})), status=self.code)
-                response.__dict__['_headers'].update(headers)
+            else:
+                response = HttpResponse(status=self.code)
+
+            response.__dict__['_headers'].update(headers)
 
         return response
