@@ -3,7 +3,7 @@ import logging
 from django.template import Context, Template, loader
 from django.core.exceptions import PermissionDenied
 
-from error_pages.auth import BasicAuthError
+from error_pages.auth import BasicAuth, BasicAuthError
 from error_pages.template import process_template, process_messages
 from error_pages import config
 from error_pages.http import *
