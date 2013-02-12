@@ -1,4 +1,4 @@
-import settings
+from django.conf import settings
 
 DEBUG = True if settings.DEBUG else False
 
